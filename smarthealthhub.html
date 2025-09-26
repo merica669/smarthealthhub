@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHealthHub.ai - Your AI Health & Fitness Companion</title>
+    <meta name="description" content="A total health, fitness, and medical AI tool. Generate free, personalized prompts based on your health data or upgrade to Pro for a guided AI chat with a health coach.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb; /* Blue */
+            --primary-dark: #1d4ed8;
+            --secondary: #16a34a; /* Green */
+            --background: #f4f5f7; /* Light Gray */
+            --surface: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+        }
+        .page-content { display: none; }
+        .page-content.active { display: block; }
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-gradient { background: var(--gradient); }
+        .step.active { display: block; }
+        .step { display: none; }
+        .response-text p { margin-bottom: 1rem; }
+        .response-text ul { list-style-type: disc; list-style-position: inside; margin-left: 1rem; margin-bottom: 1rem; }
+        .response-text li { margin-bottom: 0.5rem; }
+        .loader-dots div { animation: bounce 1.4s infinite ease-in-out both; }
+        .loader-dots .dot1 { animation-delay: -0.32s; }
+        .loader-dots .dot2 { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        .nav-link.active { color: var(--primary); font-weight: 700; }
+        .prompt-cue-card { white-space: pre-wrap; word-wrap: break-word; line-height: 1.6; }
+        .interest-checkbox:checked + label { background-color: var(--primary); color: white; border-color: var(--primary); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-lg border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            <a href="#" onclick="showPage('home')" class="text-2xl font-extrabold gradient-text flex items-center gap-2">
+                <span class="text-3xl">⚕️</span> SmartHealthHub.ai
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#" id="nav-home" class="nav-link text-gray-600 hover:text-blue-600 transition-colors" onclick="showPage('home')">Home</a>
+                <a href="#" id="nav-coach" class="nav-link text-gray-600 hover:text-blue-600 transition-colors" onclick="showPage('coach')">AI Health Coach</a>
+                <a href="#" id="nav-library" class="nav-link text-gray-600 hover:text-blue-600 transition-colors" onclick="showPage('library')">Wellness Library</a>
+                <a href="#" id="nav-circle" class="nav-link text-gray-600 hover:text-blue-600 transition-colors" onclick="showPage('circle')">Health Circle</a>
+            </div>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-transform transform hover:scale-105" onclick="showOnboarding()">
+                My Profile
+            </button>
+        </nav>
+    </header>
+
+    <main class="pt-20">
+
+        <!-- Home Page -->
+        <div id="homePage" class="page-content">
+            <section class="hero-gradient text-white">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+                    <h1 class="text-4xl md:text-6xl font-extrabold mb-4">Your AI Partner in Health</h1>
+                    <p class="text-lg md:text-xl text-blue-100 mb-8 max-w-3xl mx-auto">Navigate your health and fitness journey with confidence. Get personalized insights, plans, and answers to your wellness questions, all tailored to you.</p>
+                    <button onclick="showPage('coach')" class="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg shadow-xl transition-transform transform hover:scale-105">Meet Your AI Health Coach</button>
+                </div>
+            </section>
+
+             <section class="py-20 bg-gray-50">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                         <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">A Smarter Path to Wellness</h2>
+                         <p class="text-lg text-gray-600 mt-4 max-w-2xl mx-auto">Tools designed to empower you with knowledge and clarity.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center"><div class="text-4xl mb-4">🎯</div><h3 class="text-xl font-bold mb-2">Personalized Health Prompts</h3><p class="text-gray-600">Our AI uses your unique health profile to generate detailed prompts for creating workout plans, meal ideas, or understanding medical topics.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center"><div class="text-4xl mb-4">🤖</div><h3 class="text-xl font-bold mb-2">Interactive AI Coaching</h3><p class="text-gray-600">Upgrade to Pro to chat with your AI Health Coach, get instant answers to your questions, and receive detailed, personalized plans.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center"><div class="text-4xl mb-4">📚</div><h3 class="text-xl font-bold mb-2">Evidence-Based Info</h3><p class="text-gray-600">Access a library of example prompts and AI-generated answers on a wide range of health, fitness, and medical topics.</p></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- AI Health Coach Page (Free & Pro) -->
+        <div id="coachPage" class="page-content">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="max-w-4xl mx-auto">
+                    
+                    <!-- Free Version UI -->
+                    <div id="freeVersionUI">
+                        <div class="text-center pt-12 pb-8">
+                            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">AI Health Prompt Generator</h1>
+                            <p class="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">What's your health question? Enter a keyword to generate a personalized prompt based on your wellness profile.</p>
+                            <div class="max-w-xl mx-auto">
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <input type="text" id="searchInputFree" class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="e.g., 'Weekly meal plan', 'Beginner gym workout'">
+                                    <button onclick="handleFreeSearch()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md flex-shrink-0">Generate Prompt</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="promptGeneratedState" class="hidden bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-200 my-8">
+                            <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border-l-4 border-blue-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+                               <div>
+                                   <h3 class="font-bold text-blue-800">Upgrade to SmartHealthHub.ai Pro</h3>
+                                   <p class="text-sm text-blue-700">Unlock your AI Health Coach for interactive chat, instant personalized plans, and audio explanations.</p>
+                               </div>
+                               <button onclick="switchToPro()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md flex-shrink-0">Unlock Pro</button>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-900 mb-2">Your Personalized Prompt is Ready</h2>
+                            <p class="text-slate-600 mb-4">Copy the text below and paste it into your favorite AI chat tool to get a high-quality, personalized response.</p>
+                            <div class="prompt-cue-card bg-slate-100 p-4 rounded-lg border-2 border-slate-200 text-slate-700" id="promptCueCard"></div>
+                            <div class="mt-6 flex flex-col sm:flex-row justify-end gap-3">
+                                <button onclick="resetFreeState()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition">Create Another</button>
+                                <button onclick="copyPrompt()" class="bg-secondary text-white font-bold py-2 px-6 rounded-lg shadow-md flex items-center gap-2">Copy to Clipboard</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pro Version UI -->
+                    <div id="proVersionUI" class="hidden">
+                        <div id="welcomeState" class="text-center py-12">
+                            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">Welcome to <span class="gradient-text">SmartHealthHub.ai Pro</span></h1>
+                            <p class="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">Your AI Health Coach is ready to help. What would you like to focus on today?</p>
+                             <div class="max-w-xl mx-auto">
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <input type="text" id="searchInputPro" class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="e.g., 'Explain cholesterol', 'Workout for back pain'">
+                                    <button onclick="handleProSearch()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md">Get Curated Prompt</button>
+                                </div>
+                            </div>
+                        </div>
+                         <div id="loadingState" class="hidden text-center py-20">
+                             <div class="flex justify-center items-center space-x-2">
+                                <div class="loader-dots"><div class="dot1 w-4 h-4 bg-blue-500 rounded-full"></div><div class="dot2 w-4 h-4 bg-blue-500 rounded-full"></div><div class="dot3 w-4 h-4 bg-blue-500 rounded-full"></div></div>
+                                <p class="text-lg text-slate-600" id="loadingMessage">Analyzing...</p>
+                            </div>
+                        </div>
+                        <div id="curatedPromptState" class="hidden bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-200 my-8">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-2">Your Curated Prompt</h2>
+                            <p class="text-slate-600 mb-4">We've created this starting point based on your health profile. Feel free to edit it for a more precise answer.</p>
+                            <textarea id="curatedPromptTextarea" class="w-full h-48 p-4 rounded-lg border-2 border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
+                            <div class="mt-4 flex flex-col sm:flex-row justify-end gap-3">
+                                <button onclick="resetProState()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition">Start Over</button>
+                                <button onclick="getAdvice()" class="bg-secondary text-white font-bold py-2 px-6 rounded-lg shadow-md">Ask AI Coach</button>
+                            </div>
+                        </div>
+                        <div id="chatHistory" class="space-y-6"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wellness Library Page -->
+        <div id="libraryPage" class="page-content">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center mb-12"><h1 class="text-4xl md:text-5xl font-extrabold text-slate-900">Wellness Library</h1><p class="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">A library of expert prompts and high-quality AI answers on health, fitness, and medical topics.</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="blogPosts"></div>
+            </div>
+        </div>
+
+        <!-- Health Circle Page -->
+        <div id="circlePage" class="page-content">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                 <div class="text-center mb-12"><h1 class="text-4xl md:text-5xl font-extrabold text-slate-900">Health Circle</h1><p class="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">Share your journey, ask questions, and learn from a supportive community.</p></div>
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+                        <h3 class="text-2xl font-bold mb-4">Share with the Circle</h3>
+                         <div class="space-y-4">
+                            <input type="text" id="topicTitle" placeholder="Post title (e.g., 'Feedback on my AI-generated meal plan?')" class="w-full p-2 border border-slate-300 rounded-md">
+                            <textarea id="topicContent" rows="6" placeholder="Paste your prompt and the AI's answer here. Ask for specific feedback or share your experience!" class="w-full p-2 border border-slate-300 rounded-md"></textarea>
+                            <button onclick="postTopic()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">Post to Circle</button>
+                        </div>
+                    </div>
+                    <div id="messageBoard" class="space-y-6"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Onboarding Modal -->
+     <div id="onboardingModal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300">
+             <div class="p-6 sm:p-8 relative">
+                <button onclick="closeOnboarding()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+                <div class="text-center mb-6"><h2 class="text-2xl font-bold text-slate-900">Welcome to SmartHealthHub.ai</h2><p class="text-slate-600">Let's create your personalized health profile in 3 steps.</p></div>
+                <div class="h-2 w-full bg-gray-200 rounded-full mb-6"><div id="progressFill" class="h-2 bg-blue-600 rounded-full transition-all duration-300" style="width: 33.3%;"></div></div>
+                <div id="onboardingSteps">
+                    <div id="step1" class="step active">
+                        <h3 class="text-xl font-semibold text-center mb-4">About You</h3>
+                        <div class="space-y-4">
+                            <input type="text" id="userName" placeholder="Your Name" class="w-full p-2 border border-slate-300 rounded-md">
+                            <select id="ageRange" class="w-full p-2 border border-slate-300 rounded-md bg-white"><option value="">Your Age Range...</option><option value="18-29">18-29</option><option value="30-39">30-39</option><option value="40-49">40-49</option><option value="50-59">50-59</option><option value="60+">60+</option></select>
+                            <select id="gender" class="w-full p-2 border border-slate-300 rounded-md bg-white"><option value="">Your Gender...</option><option value="Male">Male</option><option value="Female">Female</option><option value="Prefer not to say">Prefer not to say</option></select>
+                        </div>
+                    </div>
+                    <div id="step2" class="step">
+                        <h3 class="text-xl font-semibold text-center mb-4">Your Health Goals</h3>
+                        <div class="space-y-4">
+                           <select id="primaryGoal" class="w-full p-2 border border-slate-300 rounded-md bg-white"><option value="">My primary goal is...</option><option value="Weight Loss">Weight Loss</option><option value="Muscle Gain">Muscle Gain</option><option value="Improve Diet">Improve Diet</option><option value="Better Sleep">Better Sleep</option><option value="Stress Management">Stress Management</option><option value="Understand a Medical Condition">Understand a Medical Condition</option></select>
+                           <textarea id="specificGoals" rows="3" placeholder="Any other specific goals? (e.g., run a 5k, lower blood pressure)" class="w-full p-2 border border-slate-300 rounded-md"></textarea>
+                        </div>
+                    </div>
+                    <div id="step3" class="step">
+                        <h3 class="text-xl font-semibold text-center mb-4">Your Lifestyle</h3>
+                        <div class="space-y-4">
+                           <select id="activityLevel" class="w-full p-2 border border-slate-300 rounded-md bg-white"><option value="">My activity level is...</option><option value="Sedentary (little or no exercise)">Sedentary</option><option value="Lightly Active (light exercise 1-3 days/week)">Lightly Active</option><option value="Moderately Active (moderate exercise 3-5 days/week)">Moderately Active</option><option value="Very Active (hard exercise 6-7 days/week)">Very Active</option></select>
+                           <select id="dietaryPreferences" class="w-full p-2 border border-slate-300 rounded-md bg-white"><option value="">My dietary preference is...</option><option value="No preference">No preference</option><option value="Vegetarian">Vegetarian</option><option value="Vegan">Vegan</option><option value="Low-Carb">Low-Carb</option><option value="Gluten-Free">Gluten-Free</option></select>
+                           <textarea id="knownConditions" rows="3" placeholder="Any known conditions or allergies? (Optional)" class="w-full p-2 border border-slate-300 rounded-md"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 bg-slate-50 rounded-b-2xl flex justify-between items-center">
+                <div class="text-sm font-medium text-slate-500">Step <span id="currentStep">1</span> of 3</div>
+                <div><button id="prevBtn" onclick="previousStep()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition mr-2 hidden">Back</button><button id="nextBtn" onclick="nextStep()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">Next</button></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white py-2 px-5 rounded-lg shadow-xl translate-x-[calc(100%+2rem)] transition-transform duration-300"><p id="toastMessage"></p></div>
+
+    <script>
+        // --- GLOBAL STATE ---
+        let userProfile = {}; let chatHistory = []; let currentOnboardingStep = 1; let isPro = false;
+        
+        // --- SAMPLE DATA ---
+        const sampleBlogPosts = [{title:'Prompting for a Better Workout Plan',content:"Learn how to ask an AI for a fitness plan that's actually effective and safe for your level.",image:'🏋️'},{title:'How to Use AI to Understand Your Blood Test Results',content:"A guide to creating prompts that help you decipher complex medical jargon and ask better questions to your doctor.",image:'🩸'},{title:'AI-Powered Meal Prep for Busy People',content:"Generate a week's worth of healthy, delicious meal ideas tailored to your dietary needs in minutes.",image:'🥗'}];
+        const sampleThreads = [{title:'Feedback on my AI-generated meal plan for weight loss?',author:'HealthyEater21',content:"Hey everyone, I used the prompt generator for a meal plan. Does this look balanced? Any suggestions for snacks? [Paste of prompt and AI answer]...",replies:15,time:'2 hours ago'},{title:"AI's explanation of intermittent fasting - does this sound right?",author:'CuriousGeorge',content:"I asked the AI coach to explain IF and its benefits. Can anyone with experience confirm if this is a good summary? [Paste of prompt and AI answer]...",replies:22,time:'5 hours ago'}];
+
+        // --- PAGE & TIER MANAGEMENT ---
+        function showPage(page) {
+            document.querySelectorAll('.page-content').forEach(p=>p.classList.remove('active'));
+            document.getElementById(`${page}Page`).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+            const navId = {home:'nav-home',coach:'nav-coach',library:'nav-library',circle:'nav-circle'}[page];
+            document.getElementById(navId).classList.add('active');
+            window.scrollTo(0, 0);
+            if(page === 'coach') renderAdvisorPage();
+        }
+        function switchToPro() {
+            isPro = true; localStorage.setItem('smarthealthPro', 'true'); renderAdvisorPage(); showToast("Pro Version Activated!");
+        }
+        function renderAdvisorPage() {
+            if (isPro) {
+                document.getElementById('freeVersionUI').style.display = 'none';
+                document.getElementById('proVersionUI').style.display = 'block';
+                resetProState();
+            } else {
+                document.getElementById('freeVersionUI').style.display = 'block';
+                document.getElementById('proVersionUI').style.display = 'none';
+                resetFreeState();
+            }
+        }
+
+        // --- ONBOARDING LOGIC ---
+        function showOnboarding(){document.getElementById('onboardingModal').classList.remove('opacity-0','pointer-events-none');document.querySelector('#onboardingModal > div').classList.remove('scale-95')}
+        function closeOnboarding(){document.getElementById('onboardingModal').classList.add('opacity-0','pointer-events-none');document.querySelector('#onboardingModal > div').classList.add('scale-95')}
+        function nextStep(){if(currentOnboardingStep<3){currentOnboardingStep++;document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById(`step${currentOnboardingStep}`).classList.add('active');updateOnboardingUI()}else{saveProfile();closeOnboarding();showToast("Your health profile is saved!")}}
+        function previousStep(){if(currentOnboardingStep>1){currentOnboardingStep--;document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById(`step${currentOnboardingStep}`).classList.add('active');updateOnboardingUI()}}
+        function updateOnboardingUI(){document.getElementById('currentStep').innerText=currentOnboardingStep;document.getElementById('progressFill').style.width=`${currentOnboardingStep/3*100}%`;document.getElementById('prevBtn').classList.toggle('hidden',currentOnboardingStep===1);document.getElementById('nextBtn').innerText=currentOnboardingStep===3?'Finish':'Next'}
+        function saveProfile(){userProfile={name:document.getElementById('userName').value,ageRange:document.getElementById('ageRange').value,gender:document.getElementById('gender').value,primaryGoal:document.getElementById('primaryGoal').value,specificGoals:document.getElementById('specificGoals').value,activityLevel:document.getElementById('activityLevel').value,dietaryPreferences:document.getElementById('dietaryPreferences').value,knownConditions:document.getElementById('knownConditions').value};localStorage.setItem('smarthealthProfile',JSON.stringify(userProfile))}
+        function loadProfile(){const e=localStorage.getItem('smarthealthProfile');if(e){userProfile=JSON.parse(e);Object.keys(userProfile).forEach(e=>{const t=document.getElementById(e);if(t)t.value=userProfile[e]})}else setTimeout(showOnboarding,1500)}
+        
+        // --- UI & CONTENT RENDERING ---
+        function showToast(e){const t=document.getElementById('toast');t.innerText=e;t.classList.remove('translate-x-[calc(100%+2rem)]');setTimeout(()=>{t.classList.add('translate-x-[calc(100%+2rem)]')},3e3)}
+        function loadBlogPosts() {
+            const container = document.getElementById('blogPosts');
+            container.innerHTML = sampleBlogPosts.map(post => `<div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:-translate-y-1"><div class="h-40 hero-gradient flex items-center justify-center text-5xl">${post.image}</div><div class="p-6"><h3 class="text-xl font-bold mt-2 mb-2 text-gray-800">${post.title}</h3><p class="text-gray-600">${post.content}</p></div></div>`).join('');
+        }
+        function loadMessageBoard() {
+            const board = document.getElementById('messageBoard');
+            board.innerHTML = sampleThreads.map(t => `<div class="bg-white p-6 rounded-lg shadow-md"><h4 class="font-bold text-lg">${t.title}</h4><p class="text-sm text-slate-500 mb-2">by ${t.author} • ${t.time} • ${t.replies} replies</p><p class="text-slate-600">${t.content}</p></div>`).join('');
+        }
+        function postTopic() {
+            const title = document.getElementById('topicTitle').value;
+            const content = document.getElementById('topicContent').value;
+            if (!title || !content) return showToast('Please fill all fields');
+            sampleThreads.unshift({ title, author: userProfile.name || 'Anonymous', content, replies: 0, time: 'Just now' });
+            loadMessageBoard();
+            document.getElementById('topicTitle').value = ''; document.getElementById('topicContent').value = '';
+            showToast('Posted to Health Circle!');
+        }
+        
+        // --- FREE VERSION LOGIC ---
+        function setFreeState(state) { document.getElementById('promptGeneratedState').style.display = state === 'generated' ? 'block' : 'none'; }
+        function resetFreeState() { setFreeState('initial'); document.getElementById('searchInputFree').value = ''; }
+        function handleFreeSearch() {
+            const keyword = document.getElementById('searchInputFree').value;
+            if (!keyword) return showToast("Please enter a health topic.");
+            if (Object.keys(userProfile).length < 5) { showOnboarding(); return showToast("Please complete your health profile first!"); }
+            const prompt = `I need information or a plan regarding "${keyword}". Please act as an AI health and fitness expert and provide a comprehensive, safe, and personalized response based on my profile.\n\nMy Health Profile:\n- Age Range: ${userProfile.ageRange || 'Not specified'}\n- Gender: ${userProfile.gender || 'Not specified'}\n- Primary Goal: ${userProfile.primaryGoal || 'General wellness'}\n- Activity Level: ${userProfile.activityLevel || 'Moderately Active'}\n- Dietary Preferences: ${userProfile.dietaryPreferences || 'None'}\n- Known Conditions: ${userProfile.knownConditions || 'None'}\n\nPlease provide a detailed, structured answer. IMPORTANT: Include a clear disclaimer that you are an AI and not a medical professional, and that I should consult a doctor for medical advice.`;
+            document.getElementById('promptCueCard').textContent = prompt;
+            setFreeState('generated');
+        }
+        function copyPrompt() {
+            const promptText = document.getElementById('promptCueCard').textContent;
+            navigator.clipboard.writeText(promptText).then(() => showToast('Prompt copied to clipboard!'));
+        }
+
+        // --- PRO VERSION (GEMINI API) LOGIC ---
+        function setProState(e,t=""){['welcomeState','loadingState','curatedPromptState'].forEach(e=>{document.getElementById(e).style.display='none'});document.getElementById('chatHistory').style.display='none';switch(e){case'loading':document.getElementById('loadingState').style.display='block';document.getElementById('loadingMessage').innerText=t;break;case'prompt':case'chat':document.getElementById('curatedPromptState').style.display='block';document.getElementById('chatHistory').style.display='block';break;default:document.getElementById('welcomeState').style.display='block'}}
+        function resetProState(){chatHistory=[];renderChatHistory();setProState('welcome')}
+        async function callGeminiAPI(e,t,n=3,o=1e3){const i="AIzaSyDkBHWGERIoYNeK00O_n15Uj76KEzNvpAE";const l=`https://generativelanguage.googleapis.com/v1beta/models/${e}:generateContent?key=${i}`;try{const e=await fetch(l,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(t)});if(!e.ok){if(e.status===429&&n>0){await new Promise(e=>setTimeout(e,o));return callGeminiAPI(e,t,n-1,o*2)}throw new Error(`API Error: ${e.statusText}`)}return await e.json()}catch(e){console.error("API Call failed:",e);showToast("An API error occurred.");setProState('welcome');return null}}
+        async function handleProSearch() {
+            const keyword = document.getElementById('searchInputPro').value;
+            if (!keyword) return showToast("Please enter a topic.");
+            setProState('loading', 'Crafting a health-conscious prompt...');
+            const systemInstruction = `You are a prompt engineering expert for health, fitness, and medical topics. Based on the user's health profile and a keyword, create a detailed, safe, and effective prompt for an AI Health Coach. The prompt must explicitly ask for a disclaimer about not being medical advice.`;
+            const userQuery = `User Profile: ${JSON.stringify(userProfile)}\nTopic: "${keyword}"\n\nGenerate the prompt.`;
+            const payload = { systemInstruction: { parts: [{ text: systemInstruction }] }, contents: [{ parts: [{ text: userQuery }] }] };
+            const result = await callGeminiAPI('gemini-2.5-flash-preview-05-20', payload);
+            if (result?.candidates?.[0]?.content?.parts?.[0]?.text) {
+                document.getElementById('curatedPromptTextarea').value = result.candidates[0].content.parts[0].text;
+                setProState('prompt');
+            } else { showToast("Could not create a prompt."); setProState('welcome'); }
+        }
+        async function getAdvice() {
+            const userPrompt = document.getElementById('curatedPromptTextarea').value;
+            chatHistory.push({ role: 'user', parts: [{ text: userPrompt }] });
+            renderChatHistory();
+            setProState('loading', 'AI Health Coach is researching...');
+            const systemInstruction = "You are SmartHealthHub.ai, an AI Health and Fitness Coach. Your tone is knowledgeable, empathetic, and encouraging. You MUST start every response with a clear disclaimer: 'IMPORTANT: I am an AI assistant, not a medical professional. This information is for educational purposes only. Please consult with a healthcare provider for any medical advice or diagnosis.' After the disclaimer, provide a safe, evidence-based, and personalized response based on the user's profile.";
+            const payload = { systemInstruction: { parts: [{ text: systemInstruction }] }, contents: chatHistory };
+            const result = await callGeminiAPI('gemini-2.5-flash-preview-05-20', payload);
+            if (result?.candidates?.[0]?.content?.parts?.[0]?.text) {
+                const modelResponse = result.candidates[0].content.parts[0].text;
+                chatHistory.push({ role: 'model', parts: [{ text: modelResponse }] });
+                renderChatHistory();
+                setProState('chat');
+            } else { showToast("Sorry, I'm unable to provide information on that topic."); chatHistory.pop(); renderChatHistory(); setProState('prompt'); }
+        }
+        function renderChatHistory() {
+            const container = document.getElementById('chatHistory');
+            container.innerHTML = chatHistory.map((turn, index) => {
+                const isUser = turn.role === 'user';
+                const avatar = isUser ? `<div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-bold text-white">You</div>` : `<div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-2xl">⚕️</div>`;
+                const contentBg = isUser ? 'bg-green-100' : 'bg-white';
+                const content = turn.parts[0].text.replace(/\n/g, '<br>');
+                const audioBtn = !isUser ? `<div class="mt-3"><button id="audioBtn_${index}" onclick="playAudio(this, ${index})" class="text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">▶ Listen to Advice</button></div>` : '';
+                return `<div class="flex items-start gap-4 ${isUser ? 'justify-end' : ''}">${!isUser ? avatar : ''}<div class="${contentBg} p-4 rounded-xl max-w-xl shadow-md border border-slate-100"><div class="response-text">${content}</div>${audioBtn}</div>${isUser ? avatar : ''}</div>`;
+            }).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+        function base64ToArrayBuffer(b){const c=window.atob(b),d=c.length,e=new Uint8Array(d);for(let a=0;a<d;a++)e[a]=c.charCodeAt(a);return e.buffer}function pcmToWav(e,f){const g=new ArrayBuffer(44),a=new DataView(g);function h(a,b,c){for(let d=0;d<c.length;d++)a.setUint8(b+d,c.charCodeAt(d))}return h(a,0,"RIFF"),a.setUint32(4,36+2*e.length,!0),h(a,8,"WAVE"),h(a,12,"fmt "),a.setUint32(16,16,!0),a.setUint16(20,1,!0),a.setUint16(22,1,!0),a.setUint32(24,f,!0),a.setUint32(28,2*f,!0),a.setUint16(32,2,!0),a.setUint16(34,16,!0),h(a,36,"data"),a.setUint32(40,2*e.length,!0),b=new Int16Array(44+2*e.length),b.set(new Int16Array(g),0),b.set(e,22),new Blob([b],{type:"audio/wav"})}
+        async function playAudio(button, index) {
+            button.innerHTML = '...'; button.disabled = true;
+            const textToPlay = chatHistory[index].parts[0].text;
+            const payload = {contents: [{ parts: [{ text: `Say in a clear, calm, and informative voice: ${textToPlay}` }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Enceladus" } } } }, model: "gemini-2.5-flash-preview-tts"};
+            const result = await callGeminiAPI('gemini-2.5-flash-preview-tts', payload);
+            if (result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data) {
+                const data = result.candidates[0].content.parts[0].inlineData, sampleRate = parseInt(data.mimeType.match(/rate=(\d+)/)[1], 10);
+                const pcm16 = new Int16Array(base64ToArrayBuffer(data.data)), wavBlob = pcmToWav(pcm16, sampleRate);
+                const audio = new Audio(URL.createObjectURL(wavBlob));
+                audio.play(); button.innerHTML = '❚❚ Playing...'; audio.onended = () => { button.innerHTML = '▶ Listen to Advice'; };
+            } else { showToast("Could not generate audio."); button.innerHTML = '▶ Listen to Advice'; }
+            button.disabled = false;
+        }
+        
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            isPro = localStorage.getItem('smarthealthPro') === 'true';
+            showPage('home');
+            loadProfile(); loadBlogPosts(); loadMessageBoard();
+        });
+    </script>
+</body>
+</html>
+
